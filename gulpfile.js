@@ -3,19 +3,18 @@
         browserSync     = require('browser-sync'),
         concat          = require('gulp-concat'),// соединяет файлы
         uglify          = require('gulp-uglifyjs'),// минифицирует JAVASCRIPT
-        cssnano         = require('gulp-cssnano'),//минифицирет CSS
         rename          = require('gulp-rename'),//переименовывает файлы
         autoprefixer    = require('gulp-autoprefixer'),//добавлеет префиксы CSS
         del             = require('del'),
         imagemin        = require('gulp-imagemin'), // Подключаем библиотеку для работы с изображениями
         pngquant        = require('imagemin-pngquant'), // Подключаем библиотеку для работы с png
         cache           = require('gulp-cache'); // кеш для картинок, при сборке продакшена экономит время....вроди
-        autopolyfiller  = require('gulp-autopolyfiller');// добавляет поддрежку старых браузеров для JAVASCRIPT
-        merge           = require('event-stream').merge;
-        order           = require("gulp-order");
-        plumber         = require('gulp-plumber');
-        babel           = require('gulp-babel');
-        csso = require('gulp-csso');
+        autopolyfiller  = require('gulp-autopolyfiller'),// добавляет поддрежку старых браузеров для JAVASCRIPT
+        merge           = require('event-stream').merge,
+        order           = require("gulp-order"),
+        babel           = require('gulp-babel'),
+        csso = require('gulp-csso'),
+        sourcemaps      = require('gulp-sourcemaps');
 
     //CSS files
 gulp.task('sass', function () {
@@ -23,29 +22,28 @@ gulp.task('sass', function () {
         'app/libs/libs.scss',
         'app/scss/style.scss'
     ])
-    .pipe(plumber())
-        .pipe(sass())
-        .pipe(autoprefixer([
-            'Android 2.3',
-            'Android >= 4',
-            'Chrome >= 20',
-            'Firefox >= 24',
-            'Explorer >= 8',
-            'iOS >= 6',
-            'Opera >= 12',
-            'Safari >= 6'
-        ]))
-        .pipe(concat('style.css'))
-        //.pipe(cssnano('style.css'))
-        .pipe(csso({
-                restructure: false,
-                sourceMap: true,
-                debug: true
-            }))
-        .pipe(rename({suffix: '.min'}))
-        .pipe(plumber.stop())
-        .pipe(gulp.dest('app/dist'))
-        .pipe(browserSync.reload({stream: true}))
+    .pipe(sourcemaps.init())
+    .pipe(sass.sync().on('error', sass.logError))
+    .pipe(autoprefixer([
+        'Android 2.3',
+        'Android >= 4',
+        'Chrome >= 20',
+        'Firefox >= 24',
+        'Explorer >= 8',
+        'iOS >= 6',
+        'Opera >= 12',
+        'Safari >= 6'
+    ]))
+    .pipe(concat('style.css'))
+    .pipe(csso({
+            restructure: false,
+            sourceMap: true,
+            debug: true
+        }))
+    .pipe(rename({suffix: '.min'}))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('app/dist'))
+    .pipe(browserSync.reload({stream: true}))
 });
 
 //JavaScript files
@@ -91,12 +89,14 @@ gulp.task('scripts', () => {
      "app/js/Helper.js",
      "app/js/App.js",
      "app/js/components/*.js"
-  ]).pipe(babel({
+  ])
+   .pipe(sourcemaps.init())
+   .pipe(babel({
            presets: ['es2015']
        }));
 
   var polyfills = all.pipe(autopolyfiller('polyfills.js', {
-     browsers: [            'Android 2.3',
+     browsers: [ 'Android 2.3',
                  'Android 4',
                  'Chrome 20',
                  'Firefox 24',
@@ -107,15 +107,17 @@ gulp.task('scripts', () => {
                  'Safari 6']
  }));
 
-      return merge(polyfills, all)
-          .pipe(order([
-              'polyfills.js',
-              'all.js'
-          ]))
-          .pipe(concat('build.min.js'))
-          .pipe(uglify())
-          .pipe(gulp.dest('app/dist'))
-          .pipe(browserSync.reload({stream: true}))
+  return merge(polyfills, all)
+    .pipe(order([
+        'polyfills.js',
+        'all.js'
+    ]))
+    
+    .pipe(concat('build.min.js'))
+    .pipe(uglify())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('app/dist'))
+    .pipe(browserSync.reload({stream: true}))
 });
 
 
@@ -154,6 +156,8 @@ gulp.task('watch', ['browserSync', 'sass', 'scripts'], function () {
     gulp.watch('app/libs/libs.scss', browserSync.reload);
     gulp.watch('app/img/**/*', ['img']);
 });
+
+gulp.task('default', ['watch']);
 
 //gulp.task('build', ['clean', 'img', 'sass', 'scripts'], function () {
 

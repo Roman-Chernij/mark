@@ -11,7 +11,3 @@ App.prototype.init = function () {
 window.addEventListener( "DOMContentLoaded", function() {
 	new App();
 });
-
-
-var x = document.characterSet;
-// const name = document.querySelector('.ttt').children;
