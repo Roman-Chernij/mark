@@ -1,20 +1,23 @@
-    var gulp            = require('gulp'), // Подключаем Gulp
-        sass            = require('gulp-sass'),// компилатор с SCSS в CSS
-        browserSync     = require('browser-sync'),
-        concat          = require('gulp-concat'),// соединяет файлы
-        uglify          = require('gulp-uglifyjs'),// минифицирует JAVASCRIPT
-        rename          = require('gulp-rename'),//переименовывает файлы
-        autoprefixer    = require('gulp-autoprefixer'),//добавлеет префиксы CSS
-        del             = require('del'),
-        imagemin        = require('gulp-imagemin'), // Подключаем библиотеку для работы с изображениями
-        pngquant        = require('imagemin-pngquant'), // Подключаем библиотеку для работы с png
-        cache           = require('gulp-cache'); // кеш для картинок, при сборке продакшена экономит время....вроди
-        autopolyfiller  = require('gulp-autopolyfiller'),// добавляет поддрежку старых браузеров для JAVASCRIPT
-        merge           = require('event-stream').merge,
-        order           = require("gulp-order"),
-        babel           = require('gulp-babel'),
-        csso = require('gulp-csso'),
-        sourcemaps      = require('gulp-sourcemaps');
+    const gulp            = require('gulp'), // Подключаем Gulp
+          sass            = require('gulp-sass'),// компилатор с SCSS в CSS
+          browserSync     = require('browser-sync'),
+          concat          = require('gulp-concat'),// соединяет файлы
+          uglify          = require('gulp-uglifyjs'),// минифицирует JAVASCRIPT
+          rename          = require('gulp-rename'),//переименовывает файлы
+          autoprefixer    = require('gulp-autoprefixer'),//добавлеет префиксы CSS
+          del             = require('del'),
+          imagemin        = require('gulp-imagemin'), // Подключаем библиотеку для работы с изображениями
+          pngquant        = require('imagemin-pngquant'), // Подключаем библиотеку для работы с png
+          cache           = require('gulp-cache'); // кеш для картинок, при сборке продакшена экономит время....вроди
+          autopolyfiller  = require('gulp-autopolyfiller'),// добавляет поддрежку старых браузеров для JAVASCRIPT
+          merge           = require('event-stream').merge,
+          order           = require("gulp-order"),
+          babel           = require('gulp-babel'),
+          csso            = require('gulp-csso'),
+          sourcemaps      = require('gulp-sourcemaps'),
+          jshint          = require('gulp-jshint'),
+          plumber         = require('gulp-plumber');
+
 
     //CSS files
 gulp.task('sass', function () {
@@ -90,6 +93,9 @@ gulp.task('scripts', () => {
      "app/js/App.js",
      "app/js/components/*.js"
   ])
+//  .pipe(jshint())
+// .pipe(jshint.reporter('default'))
+.pipe(plumber()) // plumber
    .pipe(sourcemaps.init())
    .pipe(babel({
            presets: ['es2015']
@@ -112,11 +118,12 @@ gulp.task('scripts', () => {
         'polyfills.js',
         'all.js'
     ]))
-    
+
     .pipe(concat('build.min.js'))
     .pipe(uglify())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('app/dist'))
+
     .pipe(browserSync.reload({stream: true}))
 });
 
