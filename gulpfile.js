@@ -15,17 +15,17 @@
           babel           = require('gulp-babel'),
           csso            = require('gulp-csso'),
           sourcemaps      = require('gulp-sourcemaps'),
-          jshint          = require('gulp-jshint'),
           plumber         = require('gulp-plumber');
 
 
     //CSS files
-gulp.task('sass', function () {
+gulp.task('sass',  () => {
      gulp.src([
         'app/libs/libs.scss',
         'app/scss/style.scss'
     ])
     .pipe(sourcemaps.init())
+    .pipe(plumber())
     .pipe(sass.sync().on('error', sass.logError))
     .pipe(autoprefixer([
         'Android 2.3',
@@ -49,43 +49,6 @@ gulp.task('sass', function () {
     .pipe(browserSync.reload({stream: true}))
 });
 
-//JavaScript files
-// gulp.task('autopolyfiller',['babel'], function () {
-//         return gulp.src('app/js/script.babel.js')
-//             .pipe(autopolyfiller('polyfill.js', {
-//                 browsers: require('autoprefixer').default
-//             }))
-//             .pipe(gulp.dest('app/js'));
-// });
-//
-// // gulp.task('babel', function () {
-// //  return gulp.src([
-// //    "app/js/Helper.js",
-// //    "app/js/App.js",
-// //    "app/js/components/*.js"
-// //  ])
-// //      .pipe(concat('scripts.js'))
-// //      .pipe(babel({
-// //          presets: ['es2015']
-// //      }))
-// //      .pipe(rename({suffix: '.babel'}))
-// //      .pipe(gulp.dest('app/js'))
-// // });
-//
-// gulp.task('scripts',['autopolyfiller'], function () {
-//     return gulp.src([
-//         "app/js/polyfill.js",
-//         "app/libs/*.js",
-//         "app/js/scripts.babel.js"
-//     ])
-//         .pipe(concat('index.js'))
-//         .pipe(rename({suffix: '.min'}))
-//         .pipe(uglify())
-//         .pipe(gulp.dest('app/dist'))
-//         .pipe(browserSync.reload({stream: true}))
-// });
-
-
 
 gulp.task('scripts', () => {
    var all = gulp.src([
@@ -93,15 +56,14 @@ gulp.task('scripts', () => {
      "app/js/App.js",
      "app/js/components/*.js"
   ])
-//  .pipe(jshint())
-// .pipe(jshint.reporter('default'))
-.pipe(plumber()) // plumber
+
+   .pipe(plumber())
    .pipe(sourcemaps.init())
    .pipe(babel({
            presets: ['es2015']
        }));
 
-  var polyfills = all.pipe(autopolyfiller('polyfills.js', {
+  let polyfills = all.pipe(autopolyfiller('polyfills.js', {
      browsers: [ 'Android 2.3',
                  'Android 4',
                  'Chrome 20',
@@ -113,9 +75,15 @@ gulp.task('scripts', () => {
                  'Safari 6']
  }));
 
-  return merge(polyfills, all)
+   let libs = gulp.src([
+    "app/libs/*.js"
+  ])
+  .pipe(concat('libs.js'));
+
+  return merge(polyfills, all, libs)
     .pipe(order([
         'polyfills.js',
+        'libs.js',
         'all.js'
     ]))
 
