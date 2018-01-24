@@ -15,12 +15,11 @@
           babel           = require('gulp-babel'),
           csso            = require('gulp-csso'),
           sourcemaps      = require('gulp-sourcemaps'),
-          jshint          = require('gulp-jshint'),
           plumber         = require('gulp-plumber');
 
 
     //CSS files
-gulp.task('sass', function () {
+gulp.task('sass',  () => {
      gulp.src([
         'app/libs/libs.scss',
         'app/scss/style.scss'
@@ -50,19 +49,21 @@ gulp.task('sass', function () {
     .pipe(browserSync.reload({stream: true}))
 });
 
+
 gulp.task('scripts', () => {
    var all = gulp.src([
      "app/js/Helper.js",
      "app/js/App.js",
      "app/js/components/*.js"
   ])
+
    .pipe(plumber())
    .pipe(sourcemaps.init())
    .pipe(babel({
            presets: ['es2015']
        }));
 
-  var polyfills = all.pipe(autopolyfiller('polyfills.js', {
+  let polyfills = all.pipe(autopolyfiller('polyfills.js', {
      browsers: [ 'Android 2.3',
                  'Android 4',
                  'Chrome 20',
@@ -74,7 +75,7 @@ gulp.task('scripts', () => {
                  'Safari 6']
  }));
 
-  let libs = gulp.src([
+   let libs = gulp.src([
     "app/libs/*.js"
   ])
   .pipe(concat('libs.js'));
@@ -132,21 +133,3 @@ gulp.task('watch', ['browserSync', 'sass', 'scripts'], function () {
 });
 
 gulp.task('default', ['watch']);
-
-//gulp.task('build', ['clean', 'img', 'sass', 'scripts'], function () {
-
- //   var buildCss = gulp.src('app/css/*.css')
-  //      .pipe(concat('style.css'))
-  //      .pipe(rename({suffix: '.min'}))
-   //     .pipe(gulp.dest('dist/css'));
-
-  //  var buildFonts = gulp.src('app/fonts/**/*')
-   //     .pipe(gulp.dest('dist/fonts'));
-
-  //  var duildJs = gulp.src('app/js/**/*')
-  //      .pipe(gulp.dest('dist/js'));
-
-   // var duildHtml = gulp.src('app/*.html')
-  //      .pipe(gulp.dest('dist/'));
-
-//});
