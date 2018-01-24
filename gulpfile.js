@@ -15,11 +15,49 @@
           babel           = require('gulp-babel'),
           csso            = require('gulp-csso'),
           sourcemaps      = require('gulp-sourcemaps'),
-          plumber         = require('gulp-plumber');
+          plumber         = require('gulp-plumber'),
+          inject          = require('gulp-inject');
 
 
     //CSS files
-gulp.task('sass',  () => {
+gulp.task('sass:inject', () => {
+    // gulp.src('./app/scss/style.scss')
+    // .pipe(inject(gulp.src([
+    //     './app/scss/basis/index.scss',
+    //     './app/scss/layout/*.scss',
+    //     './app/scss/modules/*.scss',
+    //     './app/scss/state/*.scss',
+    //     './app/scss/theme/*.scss'
+    // ], {read: false}), { relative: true }))
+    // .pipe(gulp.dest('./app/scss'));
+
+    var url =  {
+            basis: 'app/scss/basis/index.scss',
+            layout: 'app/scss/layout/*.scss',
+            modules: 'app/scss/modules/*.scss',
+            state: 'app/scss/state/*.scss',
+            theme: 'app/scss/theme/*.scss',
+            style: 'app/scss/style.scss'
+        },
+    target = gulp.src(url.style),
+    sources = gulp.src([
+        url.basis,
+        url.layout,
+        url.modules,
+        url.state,
+        url.theme
+    ], {
+      read: false
+    })
+
+    return target
+      .pipe(inject(sources, {
+        relative: true
+      }))
+      .pipe(gulp.dest('app/scss'))
+  });
+
+gulp.task('sass', ['sass:inject'],  () => {
      gulp.src([
         'app/libs/libs.scss',
         'app/scss/style.scss'
@@ -96,7 +134,7 @@ gulp.task('scripts', () => {
 });
 
 
-gulp.task('browserSync', function () {
+gulp.task('browserSync', () => {
     browserSync({
         server:{
             baseDir: 'app'
@@ -105,15 +143,15 @@ gulp.task('browserSync', function () {
     });
 });
 
-gulp.task('img', function() {
-        return gulp.src('app/img/**/*')
+gulp.task('img', () => {
+        return gulp.src('app/images/**/*')
             .pipe(cache(imagemin({
                 interlaced: true,
                 progressive: true,
                 svgoPlugins: [{removeViewBox: false}],
                 use: [pngquant()]
             })))
-            .pipe(gulp.dest('app/img'));
+            .pipe(gulp.dest('app/images'));
     });
 
 gulp.task('clear', function () {
@@ -124,7 +162,7 @@ gulp.task('clean', function () {
     return del.sync('app/dist');
 });
 
-gulp.task('watch', ['browserSync', 'sass', 'scripts'], function () {
+gulp.task('watch', ['browserSync', 'sass', 'scripts'], () => {
     gulp.watch('app/scss/**/*.+(scss|sass)' , ['sass']);
     gulp.watch('app/*.html', browserSync.reload);
     gulp.watch('app/js/components/*.js', ['scripts']);
