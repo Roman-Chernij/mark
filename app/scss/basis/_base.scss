@@ -1,7 +1,14 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	text-transform: none;
+}
+
 body {
-	min-width: 320px;
-	font: 24px/1.375, helvetica, sans-serif;
-	color: #000;
+	min-width: #{$basis-min-width-window}px;
+	font: #{$basis-font-size}px/$basis-line-height $basis-font-family;
+	color:$basis-color;
 }
 
 button,
@@ -9,15 +16,15 @@ button,
 [type=submit],
 [type=image],
 a {
-	-webkit-transition: background-color .2s, color .2s;
-	transition: background-color .2s, color .2s;
+	-webkit-transition: background-color #{$transitionTime}s, color #{$transitionTime}s;
+	transition: background-color #{$transitionTime}s, color #{$transitionTime}s;
 }
 
 a {
 	text-decoration: none;
 	&:hover,
 	&:focus {
-		text-decoration: underline;
+		text-decoration: none;
 	}
 	&:focus {
 		outline: 1px dotted;

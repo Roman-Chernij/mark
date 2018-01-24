@@ -1,14 +1,36 @@
-$mobile: 320px;
-$tablet: 768px;
-$desktop: 1025px;
+$mobileM: 480;
+$mobile:  767;
+$tabletM: 992;
+$tablet:  1023;
+$laptop:  1440;
 
-$mob-max: "max-width: $tablet - 1";
-$mob-min: "min-width: $mobile";
-$tab-max: "max-width: $desktop - 1";
-$tab-min: "min-width: $tablet";
-$desk-min: "min-width: $desktop";
+$widthvalue:'max-width';
 
-$type-1: 'Montserrat Regular';
-$type-2: 'Montserrat Light';
-$type-3: 'Montserrat SemiBold';
-$type-4: 'Montserrat Bold';
+$mobileMPoint: (#{$widthvalue} : #{$mobileM}px);
+$mobilePoint:  (#{$widthvalue} : #{$mobile}px);
+$tabletMPoint: (#{$widthvalue} : #{$tabletM}px);
+$tabletPoint:  (#{$widthvalue} : #{$tablet}px);
+$laptopPoint:  (#{$widthvalue} : #{$laptop}px);
+
+
+$urlFont:'../fonts';
+$urlImage:'../images/';
+
+
+
+
+
+$basis-font-size:16;
+$basis-color: #000;
+$basis-line-height: 1.375;
+$basis-min-width-window: 320;
+$basis-font-family:  'Arial', 'Helvetica Neue', 'Helvetica', sans-serif;
+
+
+
+$transitionTime: .3;
+
+
+
+$font1:'Arabella_Swash';
+$font1Dir:'Arabella';
