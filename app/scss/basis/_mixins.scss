@@ -10,7 +10,7 @@
 }
 
 
-// mixin @media => для коректной работы необходимо вызывать например @include for-size ($laptop) {стили}
+// mixin breakpoint => для коректной работы необходимо вызывать например @include breakpoint ($laptop) {стили}
 
 @mixin breakpoint($media) {
 
@@ -37,6 +37,31 @@
     }
 }
 
+
+/*
+<<<<<<<<< mixin gateway >>>>>>>>>>
+
+вызов миксина например @include gateway (10, 60, 1300)
+
+принимает 2 обязательных параметра, 3-й и 4-й не обязательно
+
+!!!!ВАЖНО => принимает только цыфры, без px, rem, em
+
+$minFonts => значение шрифта на мобильной версии (обязательный параметр)
+$maxFonts => текушие значение шрифта (обязательный параметр)
+$startBreak => начало медиа запроса (необязятельный параметр)
+$finishBreak => конец медиа запроса (необязятельный параметр)
+*/
+
+@mixin gateway ($minFonts, $maxFonts, $startBreak: $tablet, $finishBreak: $basis-min-width-window) {
+
+  $m: ($maxFonts - $minFonts) / ($startBreak - $finishBreak);
+  $b:  $minFonts - $m * $finishBreak;
+
+  @media (min-width: #{$finishBreak}px) and (max-width: #{$startBreak}px) {
+    font-size: calc(#{$m} * 100vw + #{$b}px);
+  }
+}
 
 // EXAMPLE
 // textarea {
